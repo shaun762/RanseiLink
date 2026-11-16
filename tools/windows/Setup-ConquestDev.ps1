@@ -544,9 +544,47 @@ function Get-WorkspacePaths([string]$Root) {
     }
 }
 
+# ROM-derived files must never be synchronised to a cloud service (AGENTS.md rule 5). Returns a reason string, or $null if the path
+# does not look cloud-synchronised. Heuristics only (names, markers, placeholder attributes, junctions): when in doubt, choose another folder.
+$script:CloudFolderNamePattern = '^(OneDrive(\s-\s.+|\s\(.+\))?|Dropbox(\s\(.+\))?|Google\s?Drive|My\sDrive|iCloudDrive|iCloud\sDrive|Box(\sSync)?|MEGA(sync)?|pCloud(\sDrive)?|Nextcloud|ownCloud|Tresorit|Creative\sCloud\sFiles.*)$'
+$script:CloudMarkerNames = @('.dropbox', '.dropbox.cache', '.owncloudsync.log', '.mega-sync')
+function Test-IsCloudSyncedPath([string]$Path, [int]$Depth = 0) {
+    $full = Get-NormalizedPath $Path
+    foreach ($name in @('OneDrive', 'OneDriveConsumer', 'OneDriveCommercial')) {
+        $v = [Environment]::GetEnvironmentVariable($name)
+        if ($v -and (Test-IsUnderPath $full $v)) { return "inside the $name folder ($v)" }
+    }
+    $dir = $full
+    while ($dir) {
+        $leaf = [IO.Path]::GetFileName($dir)
+        if ($leaf -and $leaf -match $script:CloudFolderNamePattern) { return "inside a folder named '$leaf'" }
+        foreach ($marker in $script:CloudMarkerNames) {
+            if (Test-Path -LiteralPath ([IO.Path]::Combine($dir, $marker))) { return "inside a folder that contains the sync marker '$marker' ($dir)" }
+        }
+        if (Test-Path -LiteralPath $dir) {
+            $item = Get-Item -LiteralPath $dir -Force
+            $attrs = [int]$item.Attributes
+            # OneDrive Files-On-Demand placeholder bits: RECALL_ON_OPEN, PINNED, UNPINNED, RECALL_ON_DATA_ACCESS
+            if (($attrs -band (0x40000 -bor 0x80000 -bor 0x100000 -bor 0x400000)) -ne 0) { return "a cloud placeholder / pinned folder ($dir)" }
+            if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0 -and $item.Target -and $Depth -lt 5) {
+                foreach ($t in @($item.Target)) {
+                    $inner = Test-IsCloudSyncedPath ([string]$t) ($Depth + 1)
+                    if ($inner) { return "a link ($dir -> $t) that points $inner" }
+                }
+            }
+        }
+        $parent = [IO.Path]::GetDirectoryName($dir)
+        if ([string]::IsNullOrEmpty($parent) -or $parent -eq $dir) { break }
+        $dir = $parent
+    }
+    return $null
+}
+
 function Assert-WorkspaceLocationSafe([string]$Root, [object]$RetroArch) {
     $git = Find-GitRoot $Root
     if ($git) { throw "The workspace '$Root' is inside a git working tree ('$git'). Choose a location outside any repository (ROM-derived files must never be committable)." }
+    $cloud = Test-IsCloudSyncedPath $Root
+    if ($cloud) { throw "The workspace '$Root' is in a cloud-synchronised location ($cloud). ROM-derived files must stay on this computer: choose a folder outside OneDrive, Dropbox, Google Drive, iCloud, Box, MEGA, pCloud, Nextcloud and similar." }
     if ($RetroArch -and $RetroArch.Dir -and (Test-PathsOverlap $Root $RetroArch.Dir)) { throw "The workspace may not overlap your RetroArch folder ('$($RetroArch.Dir)')." }
     foreach ($d in @($RetroArch.SaveDir, $RetroArch.StateDir)) {
         if ($d -and (Test-PathsOverlap $Root $d)) { throw "The workspace may not overlap your RetroArch save/state folder ('$d')." }
@@ -955,6 +993,8 @@ function Invoke-ConquestDev {
                 if (-not (Confirm-Action 'Continue anyway?')) { throw 'Cancelled: not a Pokemon Conquest ROM.' }
             }
             if ($header.HeaderCrcValid) { Write-Ok 'header CRC is valid' } else { Write-Warn "header CRC mismatch (stored 0x$($header.HeaderCrcStored.ToString('X4')), computed 0x$($header.HeaderCrcComputed.ToString('X4'))) - modified or damaged dump?" }
+            $srcCloud = Test-IsCloudSyncedPath $romSource
+            if ($srcCloud) { Write-Warn "Your source ROM is $srcCloud. Reading it is fine, but your sync client may already hold a copy of it in the cloud - this script cannot undo that. The WORKSPACE copy stays local." }
             if (Test-IsUnderPath $romSource $paths.Root) { Write-Warn 'The ROM is already inside the workspace; it will still be copied into original\.' }
 
             Write-Section 'Copy ROM into the workspace (source is only read)'

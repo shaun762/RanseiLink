@@ -17,6 +17,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  repo-guard:
+    name: ROM guard (no ROMs, saves or unexplained binaries)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan every tracked file
+        shell: pwsh
+        run: ./tools/guard/Test-RepoForRomData.ps1 -Mode All
+      - name: Scan files added or changed by this pull request
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          ./tools/guard/Test-RepoForRomData.ps1 -Mode Range -Base origin/${{ github.base_ref }} -Head HEAD
+
   dotnet:
     name: .NET build + tests (Linux)
     runs-on: ubuntu-latest
@@ -50,11 +67,11 @@ jobs:
         run: dotnet build RanseiLink.Windows/RanseiLink.Windows.csproj -c Release
       - name: Test - RomRecon (Windows paths and file sharing)
         run: dotnet test tools/RomRecon.Tests/RomRecon.Tests.csproj -c Release
-      - name: Lint Setup-ConquestDev.ps1 (PSScriptAnalyzer, PowerShell 5.1 + 7 syntax)
+      - name: Lint the PowerShell scripts (PSScriptAnalyzer, PowerShell 5.1 + 7 syntax)
         shell: pwsh
         run: |
           Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -SkipPublisherCheck
-          $r = Invoke-ScriptAnalyzer -Path tools/windows/Setup-ConquestDev.ps1 -Settings tools/windows/PSScriptAnalyzerSettings.psd1
+          $r = @(); foreach ($f in 'tools/windows/Setup-ConquestDev.ps1', 'tools/windows/Export-ShareableText.ps1', 'tools/guard/Test-RepoForRomData.ps1', 'tools/guard/Install-Guards.ps1') { $r += Invoke-ScriptAnalyzer -Path $f -Settings tools/windows/PSScriptAnalyzerSettings.psd1 }
           $r | Format-Table RuleName, Line, Message -AutoSize -Wrap
           if (@($r).Count -gt 0) { throw "PSScriptAnalyzer reported $(@($r).Count) finding(s)." }
       - name: Pester - Windows PowerShell 5.1 (the shell stock Windows ships with)
@@ -62,14 +79,14 @@ jobs:
         run: |
           Install-Module Pester -MinimumVersion 5.5.0 -Scope CurrentUser -Force -SkipPublisherCheck
           Import-Module Pester -MinimumVersion 5.5.0
-          $r = Invoke-Pester -Path tools/windows/tests -PassThru -Output Detailed
+          $r = Invoke-Pester -Path tools/windows/tests, tools/guard/tests -PassThru -Output Detailed
           if ($r.FailedCount -gt 0) { throw "$($r.FailedCount) Pester test(s) failed on PowerShell $($PSVersionTable.PSVersion)." }
       - name: Pester - PowerShell 7
         shell: pwsh
         run: |
           Install-Module Pester -MinimumVersion 5.5.0 -Scope CurrentUser -Force -SkipPublisherCheck
           Import-Module Pester -MinimumVersion 5.5.0
-          $r = Invoke-Pester -Path tools/windows/tests -PassThru -Output Detailed
+          $r = Invoke-Pester -Path tools/windows/tests, tools/guard/tests -PassThru -Output Detailed
           if ($r.FailedCount -gt 0) { throw "$($r.FailedCount) Pester test(s) failed on PowerShell $($PSVersionTable.PSVersion)." }
 
   windows-wpf-tests:
