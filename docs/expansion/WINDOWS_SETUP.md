@@ -115,7 +115,7 @@ The script reads `retroarch.cfg` (next to `retroarch.exe` for portable installs,
 
 | Tool | Need | How to get | Status |
 |---|---|---|---|
-| Windows PowerShell 5.1 or PowerShell 7 | required | built in / `winget install --id Microsoft.PowerShell -e` | 7.6 **[C]** tested locally; **Windows PowerShell 5.1.26100 [C]**: 49/51 tests passed in the first CI run, the 2 failures were a test-helper issue (fixed, re-run pending) |
+| Windows PowerShell 5.1 or PowerShell 7 | required | built in / `winget install --id Microsoft.PowerShell -e` | 7.6 **[C]** tested locally; **Windows PowerShell 5.1.26100 [C]**: 51/51 tests pass on a Windows CI runner (first run 49/51; the 2 failures were a test-helper issue, now fixed) |
 | git | required to fetch updates | `winget install --id Git.Git -e` | winget id seen on winstall.app **[S]** |
 | .NET SDK 10 | required for RomRecon/tests | `winget install --id Microsoft.DotNet.SDK.10 -e` | id seen **[S]** |
 | RetroArch + melonDS core | you already have it | — | detected, never modified |

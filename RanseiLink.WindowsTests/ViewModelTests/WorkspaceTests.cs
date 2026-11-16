@@ -42,7 +42,7 @@ public class WorkspaceTests
             );
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void MiniViewModelsShouldHaveData()
     {
         var eevee = _workspaceViewModel.Items[0].Should().BeOfType<PokemonMiniViewModel>().Which;
@@ -56,7 +56,7 @@ public class WorkspaceTests
         rayquaza.Type2.Should().Be(Core.Enums.TypeId.Flying);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void ClickShouldRequestNavigate()
     {
         List<int> selected = [];
@@ -68,7 +68,7 @@ public class WorkspaceTests
         selected.Should().BeEquivalentTo([15]);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void SelectShouldChangeSelection()
     {
         _workspaceViewModel.SelectedId.Should().Be(0);
@@ -82,7 +82,7 @@ public class WorkspaceTests
         _bigViewModel.Model.Should().Be(_service.Retrieve(15));
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void ShouldForwardChangeNotifications()
     {
         var eevee = _workspaceViewModel.Items[0];
@@ -102,7 +102,7 @@ public class WorkspaceTests
         propertiesChanged.Clear();
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void SearchFiltersItems()
     {
         _workspaceViewModel.SearchText.Should().BeNullOrEmpty();
@@ -122,7 +122,7 @@ public class WorkspaceTests
         _workspaceViewModel.Items[199].Id.Should().Be(199); // rayquaza
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void FilterToSingleItemShouldRequestNavigate()
     {
         List<int> selected = [];

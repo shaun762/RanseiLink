@@ -47,7 +47,7 @@ The last row is useful for the expansion work: the test's real ROM bytes show th
 
 | Fixture (under `%LOCALAPPDATA%\RanseiLink\Test\`) | Tests that use it |
 |---|---|
-| `TestMod\` (an *unmodified* mod folder created from your NA ROM: `data\`, `msg\`, `event\`, `data\map`…) | `PokemonServiceTests` (4), `BaseWarriorServiceTests` (4), `ScenarioPokemonServiceTests` (2), `EventTests` (3 theories), `MapLoadTests`, `TextTests.IdenticalThroughLoadSaveCycle`, `ScriptTests` ×2 |
+| `TestMod\` (an *unmodified* mod folder created from your NA ROM: `data\`, `msg\`, `event\`, `data\map`…) | `PokemonServiceTests` (4), `BaseWarriorServiceTests` (4), `ScenarioPokemonServiceTests` (2), `EventTests` (3 theories), `MapLoadTests`, `TextTests.IdenticalThroughLoadSaveCycle`, `ScriptTests` ×2, and (WindowsTests) `WorkspaceTests` ×6 |
 | `TestModJapan\` (same, from your JP ROM) | the two `*_Japan` round-trip tests |
 | `VPYT_MSG.DAT`, `VPYJ_MSG.DAT` (the ROM's `data/MSG.DAT`) | `TextTests.MsgDatIdenticalThroughUnpackPack` (1 theory) |
 
@@ -65,7 +65,7 @@ The last row is useful for the expansion work: the test's real ROM bytes show th
 | `RanseiLink.ConsoleTests` | does not build | **2 passed, 0 failed, 2 skipped** |
 | `tools/RomRecon.Tests` (new) | — | **40 passed** |
 | `tools/windows/tests` Pester (new) | — | **51 passed** (PowerShell 7.6, Linux) |
-| `RanseiLink.WindowsTests` (WPF) | **does not compile** (found by CI, not visible on Linux): 3 errors in `ScenarioWarriorWorkspaceTests.cs` | compiles (test now builds the FactoryGenie-generated factories); **runtime result pending CI** **[U]** |
+| `RanseiLink.WindowsTests` (WPF) | **does not compile** (found by CI): 3 errors in `ScenarioWarriorWorkspaceTests.cs` | compiles; on Windows CI **32 passed, 7 failed** before the fixture change → expected **32 passed, 6 skipped (ROM fixture), 1 failed** (`EditorModuleTests.RunPlugin`, see §6) **[U until the re-run]** |
 
 ## 5. Automated checks (`.github/workflows/ci.yml`)
 
@@ -78,13 +78,14 @@ The last row is useful for the expansion work: the test's real ROM bytes show th
 **First CI run (PR #2, before the follow-up fix) [C]:**
 * Linux job: **passed** (builds + CoreTests + ConsoleTests + RomRecon.Tests).
 * Windows job: WPF app build ✔, RomRecon.Tests on Windows ✔, PSScriptAnalyzer ✔, and **Pester on genuine Windows PowerShell 5.1.26100: 49 of 51 passed**. The 2 failures were in the test *helper*, not the script: under 5.1 a child process's stderr became a terminating error (the script's own messages were correct). Fixed in the follow-up commit; re-run result is reported on the PR.
-* WPF test job: failed to **compile** `RanseiLink.WindowsTests` (the stale factories above) — fixed in the follow-up commit.
+* WPF test job: failed to **compile** `RanseiLink.WindowsTests` (the stale factories above) — fixed; the second run then executed the suite: **32 passed, 7 failed** — six `WorkspaceTests` need the ROM fixture (now `[RomFixtureFact]` in `RanseiLink.WindowsTests/RomFixtureAttributes.cs`), one is `RunPlugin` (§6).
+* **Second CI run [C]:** Linux job ✔; Windows job ✔ including **Pester 51/51 on Windows PowerShell 5.1 and on PowerShell 7**, PSScriptAnalyzer ✔, RomRecon.Tests ✔.
 
 Nothing in CI needs a ROM; ROM-fixture tests simply show as skipped.
 
 ## 6. Remaining known issues
 * `ScenarioPokemon` bit layout disagreement (above).
-* The WPF test project's *runtime* behaviour is still unverified (it now compiles; CI will say).
+* **`EditorModuleTests.RunPlugin` fails on Windows CI [C]** — `Expected invocation on the mock exactly 3 times, but was 2 times: IModServiceGetterFactory.Create(ModInfo)` (`RanseiLink.WindowsTests/ViewModelTests/MainEditorViewModelTests/EditorModuleTests.cs:240`). The view-model creates the mod-service getter one time fewer than the test expects. It is a *behavioural* difference in upstream's mid-refactor plugin flow (not a rename), so it is **not** treated as demonstrably stale: it is left failing and flagged for the owner (either the test's expected count or the plugin flow is wrong). The WPF job is therefore marked non-blocking in CI.
 * **Dependency advisory [C, from the CI build log]:** `SixLabors.ImageSharp 3.1.12` triggers NuGet audit warnings NU1902/NU1903 (several high-severity advisories, e.g. GHSA-jjfr-hcj7-qf5w) in every project that references it. It is an upstream dependency (`DEPENDENCIES.md` lists it as Apache-2.0); not touched here. Worth an upgrade decision and a licence re-check (ImageSharp 3.x uses the Six Labors Split License).
 * Upstream is mid-refactor ("binding errors need fixing"): GUI runtime behaviour was not exercised.
 * `RanseiLink.Core/RomFs/NdsHeader.cs:33-35` appears to read the ARM9 entry and RAM addresses in swapped order relative to GBATEK **[S]** — unused elsewhere, left untouched (production code).
