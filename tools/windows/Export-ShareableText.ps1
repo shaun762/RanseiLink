@@ -57,7 +57,7 @@ function Test-ShareableTextFile([string]$File, [int]$MaxKB = 256) {
 }
 
 function ConvertTo-RedactedText {
-    param([Parameter(Mandatory = $true)][string]$Text, [string]$UserName = [Environment]::UserName, [string]$ComputerName = [Environment]::MachineName)
+    param([Parameter(Mandatory = $true)][string]$Text, [string]$UserName = [Environment]::UserName, [string]$ComputerName = [Environment]::MachineName, [string]$ProfilePath = [Environment]::GetFolderPath('UserProfile'))
     $counts = [ordered]@{}
     $apply = {
         param([string]$category, [string]$pattern, $replacement)
@@ -72,6 +72,8 @@ function ConvertTo-RedactedText {
     & $apply 'secret-setting' '(?im)^(\s*(?:cheevos_(?:username|password|token)|netplay_(?:nickname|password|spectate_password|ip_address|custom_mitm_server)|ai_service_url|[A-Za-z0-9_]*(?:password|passwd|secret|token|api_?key)[A-Za-z0-9_]*)\s*[=:]\s*).*$' '${1}<redacted>'
     & $apply 'url-credentials' '(?i)\b([a-z][a-z0-9+.\-]*://)[^/\s:@]+:[^/\s@]+@' '${1}<redacted>@'
     & $apply 'email' '\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b' '<email>'
+    # exact profile folder first: it may contain spaces (e.g. C:\Users\John Smith)
+    if ($ProfilePath -and $ProfilePath.Length -ge 6) { & $apply 'profile-path' ('(?i)' + [regex]::Escape($ProfilePath.TrimEnd('\', '/'))) '%USERPROFILE%' }
     & $apply 'profile-path' '(?i)([A-Z]:\\Users\\)[^\\\s"''<>|]+' '${1}<user>'
     & $apply 'profile-path' '(?<=/(?:home|Users)/)[^/\s"'']+' '<user>'
     if ($UserName -and $UserName.Length -ge 2) { & $apply 'user-name' ('(?i)(?<![A-Za-z0-9])' + [regex]::Escape($UserName) + '(?![A-Za-z0-9])') '<user>' }
@@ -87,7 +89,7 @@ function ConvertTo-RedactedText {
         if ($v -match '[A-Za-z]' -and $v -match '\d') { $script:__n++; return '<token>' }
         return $v
     }
-    & $apply 'long-token' '\b[A-Za-z0-9+/_=\-]{32,}\b' $tokenEvaluator
+    & $apply 'long-token' '\b[A-Za-z0-9_=\-]{32,}\b' $tokenEvaluator
     $out = $script:__text
     Remove-Variable -Scope Script -Name __text, __n -ErrorAction SilentlyContinue
     return [pscustomobject]@{ Text = $out; Counts = $counts }

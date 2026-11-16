@@ -36,6 +36,11 @@ Describe 'Redaction' {
         $r.Text | Should -Match 'C:\\Users\\<user>\\PokemonConquestDev\\original\\Pokemon Conquest.nds'
         $r.Text | Should -Match '/home/<user>/x'
     }
+    It 'redacts a profile folder that contains a space' {
+        $r = ConvertTo-RedactedText -Text 'C:\Users\John Smith\PokemonConquestDev\x and John Smith logged in' -UserName 'John Smith' -ComputerName 'zz' -ProfilePath 'C:\Users\John Smith'
+        $r.Text | Should -Not -Match 'John'
+        $r.Text | Should -Match '%USERPROFILE%\\PokemonConquestDev\\x'
+    }
     It 'redacts e-mail, URL credentials and secret settings' {
         $t = "mail me at someone@example.com`nurl https://bob:hunter2@host.example/x`ncheevos_password = `"abc`"`nnetplay_nickname = Bob`nmy_api_key: ABCDEF`nsavefile_directory = `":\saves`""
         $r = ConvertTo-RedactedText -Text $t -UserName 'zz' -ComputerName 'zz'
