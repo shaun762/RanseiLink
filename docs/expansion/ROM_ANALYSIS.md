@@ -121,7 +121,7 @@ Defaults: 200, 199, 201, 252, 251 (counts/ids), 0x2580, 0x25C0, 0xC4E0, 1400, 11
 |---|---|
 | `RomRecon.Tests` (xunit, synthetic data) | **40 passed, 0 failed** (this session, Linux, .NET 10.0.404) |
 | BLZ vs ndspy 4.2.0 vectors | 3 of 3 exact |
-| Windows run | **Not run by the author** (no Windows machine). CI is configured to run these tests on `windows-latest`; see BASELINE_REPAIR.md §5 |
+| Windows run | `RomRecon.Tests` **passed on `windows-latest`** in the first CI run **[C]** (the author has no Windows machine; see BASELINE_REPAIR.md §5) |
 | **Run on a real ROM** | **No — pending the owner** |
 | Region coverage | NA (`VPYT`), JP (`VPYJ`, shorter Kingdom record), EU (`VPYP`, same data layout as NA per `ConquestGameCodeExtensions`) — only the NA/JP layouts are encoded; EU is assumed identical to NA **[H]** |
 

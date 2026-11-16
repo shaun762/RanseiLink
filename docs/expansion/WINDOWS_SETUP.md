@@ -115,7 +115,7 @@ The script reads `retroarch.cfg` (next to `retroarch.exe` for portable installs,
 
 | Tool | Need | How to get | Status |
 |---|---|---|---|
-| Windows PowerShell 5.1 or PowerShell 7 | required | built in / `winget install --id Microsoft.PowerShell -e` | 7.x **[C]** tested here; 5.1 syntax-checked and covered by CI **[U until CI ran]** |
+| Windows PowerShell 5.1 or PowerShell 7 | required | built in / `winget install --id Microsoft.PowerShell -e` | 7.6 **[C]** tested locally; **Windows PowerShell 5.1.26100 [C]**: 49/51 tests passed in the first CI run, the 2 failures were a test-helper issue (fixed, re-run pending) |
 | git | required to fetch updates | `winget install --id Git.Git -e` | winget id seen on winstall.app **[S]** |
 | .NET SDK 10 | required for RomRecon/tests | `winget install --id Microsoft.DotNet.SDK.10 -e` | id seen **[S]** |
 | RetroArch + melonDS core | you already have it | — | detected, never modified |
@@ -143,4 +143,4 @@ To remove everything: close all programs and delete the `PokemonConquestDev` fol
 
 ## 9. What is automated vs. what you run
 
-See the PR description for the owner-facing summary. In short: **fully automated** — tool detection, folder creation, ROM validation/copy/verification/manifest, reports, isolated-profile generation, safety checks, 51 Pester tests, 40 RomRecon tests, CI. **Needs you at the keyboard** — choosing the ROM, confirming prompts, typing `BACKUP`, closing RetroArch before a backup, installing tools, the first real run of RomRecon and the first isolated emulator run (nothing here has ever been executed on Windows or against a real ROM).
+See the PR description for the owner-facing summary. In short: **fully automated** — tool detection, folder creation, ROM validation/copy/verification/manifest, reports, isolated-profile generation, safety checks, 51 Pester tests, 40 RomRecon tests, CI. **Needs you at the keyboard** — choosing the ROM, confirming prompts, typing `BACKUP`, closing RetroArch before a backup, installing tools, the first real run of RomRecon and the first isolated emulator run (the script's tests have run on a Windows CI runner but not on your laptop, and nothing has run against a real ROM or real RetroArch).

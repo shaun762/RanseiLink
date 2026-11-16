@@ -443,7 +443,15 @@ Describe 'End to end: the script run as a user would run it' {
         $hostPath = (Get-Process -Id $PID).Path
         if ($hostPath -match '[\\/]dotnet(\.exe)?$') { $script:pwshExe = $hostPath; $script:pwshPrefix = @((Join-Path $PSHOME 'pwsh.dll')) }
         else { $script:pwshExe = $hostPath; $script:pwshPrefix = @() }
-        function Invoke-ChildPwsh { param([string[]]$Arguments) & $script:pwshExe @($script:pwshPrefix + @('-NoProfile', '-File', $script:ScriptPath) + $Arguments) 2>&1 | Out-String }
+        function Invoke-ChildPwsh {
+            param([string[]]$Arguments)
+            # Windows PowerShell 5.1 wraps a native command's stderr lines in ErrorRecords and Pester runs tests with
+            # $ErrorActionPreference = 'Stop', which would turn the child's (expected) error output into a terminating error.
+            $previous = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            try { & $script:pwshExe @($script:pwshPrefix + @('-NoProfile', '-File', $script:ScriptPath) + $Arguments) 2>&1 | ForEach-Object { $_.ToString() } | Out-String }
+            finally { $ErrorActionPreference = $previous }
+        }
         $script:raRoot = New-FakeRetroArch (Join-Path $TestDrive 'RA_e2e') -WithCore
     }
     It 'sets up the workspace from a ROM path non-interactively, twice, without touching the source' {

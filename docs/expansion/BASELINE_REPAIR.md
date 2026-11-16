@@ -65,7 +65,7 @@ The last row is useful for the expansion work: the test's real ROM bytes show th
 | `RanseiLink.ConsoleTests` | does not build | **2 passed, 0 failed, 2 skipped** |
 | `tools/RomRecon.Tests` (new) | — | **40 passed** |
 | `tools/windows/tests` Pester (new) | — | **51 passed** (PowerShell 7.6, Linux) |
-| `RanseiLink.WindowsTests` (WPF) | not run | not run here; CI job added, non-blocking until proven **[U]** |
+| `RanseiLink.WindowsTests` (WPF) | **does not compile** (found by CI, not visible on Linux): 3 errors in `ScenarioWarriorWorkspaceTests.cs` | compiles (test now builds the FactoryGenie-generated factories); **runtime result pending CI** **[U]** |
 
 ## 5. Automated checks (`.github/workflows/ci.yml`)
 
@@ -75,10 +75,16 @@ The last row is useful for the expansion work: the test's real ROM bytes show th
 | `windows` | build the WPF app; RomRecon.Tests on Windows; PSScriptAnalyzer on the setup script; Pester under **Windows PowerShell 5.1** and under PowerShell 7 |
 | `windows-wpf-tests` (non-blocking) | `RanseiLink.WindowsTests` |
 
-**[U] The workflow has never run when this was written.** The repository had no workflows and the fork's Actions may need enabling; results appear on the PR once it runs. Nothing in CI needs a ROM; ROM-fixture tests simply show as skipped.
+**First CI run (PR #2, before the follow-up fix) [C]:**
+* Linux job: **passed** (builds + CoreTests + ConsoleTests + RomRecon.Tests).
+* Windows job: WPF app build ✔, RomRecon.Tests on Windows ✔, PSScriptAnalyzer ✔, and **Pester on genuine Windows PowerShell 5.1.26100: 49 of 51 passed**. The 2 failures were in the test *helper*, not the script: under 5.1 a child process's stderr became a terminating error (the script's own messages were correct). Fixed in the follow-up commit; re-run result is reported on the PR.
+* WPF test job: failed to **compile** `RanseiLink.WindowsTests` (the stale factories above) — fixed in the follow-up commit.
+
+Nothing in CI needs a ROM; ROM-fixture tests simply show as skipped.
 
 ## 6. Remaining known issues
 * `ScenarioPokemon` bit layout disagreement (above).
-* The WPF test project has not been run by anyone in this effort.
+* The WPF test project's *runtime* behaviour is still unverified (it now compiles; CI will say).
+* **Dependency advisory [C, from the CI build log]:** `SixLabors.ImageSharp 3.1.12` triggers NuGet audit warnings NU1902/NU1903 (several high-severity advisories, e.g. GHSA-jjfr-hcj7-qf5w) in every project that references it. It is an upstream dependency (`DEPENDENCIES.md` lists it as Apache-2.0); not touched here. Worth an upgrade decision and a licence re-check (ImageSharp 3.x uses the Six Labors Split License).
 * Upstream is mid-refactor ("binding errors need fixing"): GUI runtime behaviour was not exercised.
 * `RanseiLink.Core/RomFs/NdsHeader.cs:33-35` appears to read the ARM9 entry and RAM addresses in swapped order relative to GBATEK **[S]** — unused elsewhere, left untouched (production code).
