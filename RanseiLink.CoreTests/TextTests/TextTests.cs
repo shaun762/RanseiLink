@@ -40,7 +40,7 @@ public class TextTests
         _msgService.SaveName(input).Should().Equal(expected);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void IdenticalThroughLoadSaveCycle()
     {
         var files = Directory.GetFiles(Path.Combine(TestConstants.TestModFolder, "msg"));
@@ -59,7 +59,7 @@ public class TextTests
         }
     }
 
-    [Theory]
+    [RomFixtureTheory("VPYT_MSG.DAT", "VPYJ_MSG.DAT")]
     [InlineData("VPYT")]
     [InlineData("VPYJ")]
     public void MsgDatIdenticalThroughUnpackPack(string gameCode)

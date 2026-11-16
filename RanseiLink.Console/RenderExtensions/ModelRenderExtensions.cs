@@ -238,7 +238,7 @@ public static partial class RenderExtensions
             console.WriteTitle(k.ToString());
             for (int i = 0; i < ScenarioBuilding.SlotCount; i++)
             {
-                console.WriteProperty(i, $"InitExp: {model.GetInitialExp(k, i)}, Unknown2: {model.GetUnknown2(k, i)}");
+                console.WriteProperty(i, $"InitExp: {model.GetInitialExp(k, i)}, IsUnlocked: {model.GetIsUnlocked(k, i)}");
             }
         }
     }

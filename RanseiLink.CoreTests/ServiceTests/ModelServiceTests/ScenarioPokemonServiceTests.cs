@@ -17,7 +17,7 @@ public class ScenarioPokemonServiceTests
         service = new ScenarioPokemonService(new ModInfo() { FolderPath = TestConstants.TestModFolder }, new Mock<IPokemonService>().Object);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void ReadsCorrectValues()
     {
         var eevee = service.Retrieve((int)ScenarioId.TheLegendOfRansei).Retrieve(0);
@@ -33,7 +33,7 @@ public class ScenarioPokemonServiceTests
         fromAnotherScenario.Data.Should().Equal(new byte[] { 0x47, 0x00, 0xFC, 0x03, 0xEF, 0xBD, 0xC7, 0x02 });
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void OutOfRangeThrowsException()
     {
         Action negativeTest = () => service.Retrieve((int)ScenarioId.TheLegendOfRansei).Retrieve(-1);

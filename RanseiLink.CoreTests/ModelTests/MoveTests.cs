@@ -22,13 +22,13 @@ public class MoveTests
         a.Accuracy.Should().Be(100);
         a.Range.Should().Be(MoveRangeId.Cross);
         a.Effect1.Should().Be(MoveEffectId.ChanceToPoisonTarget);
-        a.Effect1Chance.Should().Be(10);
+        a.Effect1_Quantity.Should().Be(10);
         a.Effect2.Should().Be(MoveEffectId.HighCriticalHitChance);
-        a.Effect2Chance.Should().Be(0);
-        a.Effect3.Should().Be(MoveEffectId.ChanceToPoisonTarget);
-        a.Effect3Chance.Should().Be(10);
-        a.Effect4.Should().Be(MoveEffectId.HighCriticalHitChance);
-        a.Effect4Chance.Should().Be(0);
+        a.Effect2_Quantity.Should().Be(0);
+        a.Rank5Effect1.Should().Be(MoveEffectId.ChanceToPoisonTarget);
+        a.Rank5Effect1_Quantity.Should().Be(10);
+        a.Rank5Effect2.Should().Be(MoveEffectId.HighCriticalHitChance);
+        a.Rank5Effect2_Quantity.Should().Be(0);
         a.MovementAnimation.Should().Be(MoveMovementAnimationId.Default);
         a.StartupAnimation.Should().Be(MoveAnimationId.Default);
         a.ProjectileAnimation.Should().Be(MoveAnimationId.Default);
@@ -50,13 +50,13 @@ public class MoveTests
             Accuracy = 100,
             Range = MoveRangeId.Cross,
             Effect1 = MoveEffectId.ChanceToPoisonTarget,
-            Effect1Chance = 10,
+            Effect1_Quantity = 10,
             Effect2 = MoveEffectId.HighCriticalHitChance,
-            Effect2Chance = 5,
-            Effect3 = MoveEffectId.ChanceToPoisonTarget,
-            Effect3Chance = 10,
-            Effect4 = MoveEffectId.HighCriticalHitChance,
-            Effect4Chance = 8,
+            Effect2_Quantity = 5,
+            Rank5Effect1 = MoveEffectId.ChanceToPoisonTarget,
+            Rank5Effect1_Quantity = 10,
+            Rank5Effect2 = MoveEffectId.HighCriticalHitChance,
+            Rank5Effect2_Quantity = 8,
             MovementAnimation = MoveMovementAnimationId.FieryDance,
             StartupAnimation = MoveAnimationId.OrangeOrbBurst,
             ProjectileAnimation = MoveAnimationId.OrbBlackHole,
@@ -71,13 +71,13 @@ public class MoveTests
         a.Accuracy.Should().Be(100);
         a.Range.Should().Be(MoveRangeId.Cross);
         a.Effect1.Should().Be(MoveEffectId.ChanceToPoisonTarget);
-        a.Effect1Chance.Should().Be(10);
+        a.Effect1_Quantity.Should().Be(10);
         a.Effect2.Should().Be(MoveEffectId.HighCriticalHitChance);
-        a.Effect2Chance.Should().Be(5);
-        a.Effect3.Should().Be(MoveEffectId.ChanceToPoisonTarget);
-        a.Effect3Chance.Should().Be(10);
-        a.Effect4.Should().Be(MoveEffectId.HighCriticalHitChance);
-        a.Effect4Chance.Should().Be(8);
+        a.Effect2_Quantity.Should().Be(5);
+        a.Rank5Effect1.Should().Be(MoveEffectId.ChanceToPoisonTarget);
+        a.Rank5Effect1_Quantity.Should().Be(10);
+        a.Rank5Effect2.Should().Be(MoveEffectId.HighCriticalHitChance);
+        a.Rank5Effect2_Quantity.Should().Be(8);
         a.MovementAnimation.Should().Be(MoveMovementAnimationId.FieryDance);
         a.StartupAnimation.Should().Be(MoveAnimationId.OrangeOrbBurst);
         a.ProjectileAnimation.Should().Be(MoveAnimationId.OrbBlackHole);

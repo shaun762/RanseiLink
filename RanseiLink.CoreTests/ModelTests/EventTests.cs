@@ -17,7 +17,7 @@ public class EventTests
         Directory.CreateDirectory(TestTempFolder);
     }
 
-    [Theory]
+    [RomFixtureTheory]
     [InlineData("00000064.eve", 0x64, 0x31C8, 0x1B, 0x1A2)]
     [InlineData("00000065.eve", 0x65, 0x2C10, 0x1B, 0x86)]
     public void ReadsFileCorrectly(string eventFileName, int fileId, int headerUnknown, int eventGroupCount, int subgroupCount)
@@ -36,7 +36,7 @@ public class EventTests
         eve.EventGroupsB.Sum(i => i.Count).Should().Be(subgroupCount);
     }
 
-    [Theory]
+    [RomFixtureTheory]
     [InlineData("00000064.eve")]
     [InlineData("00000065.eve")]
     public void IdenticalThroughLoadSaveCycle(string eventFileName)
@@ -55,7 +55,7 @@ public class EventTests
         actualBytes.Should().Equal(expectedBytes);
     }
 
-    [Theory]
+    [RomFixtureTheory]
     [InlineData("00000064.eve")]
     [InlineData("00000065.eve")]
     public void IndenticalThroughUnpackPack(string eventFileName)

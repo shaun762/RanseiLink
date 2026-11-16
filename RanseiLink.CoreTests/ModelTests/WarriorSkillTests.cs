@@ -20,12 +20,12 @@ public class WarriorSkillTests
         }, ConquestGameCode.VPYT);
 
         a.Name.Should().Be("Mayhem");
-        a.Effect1Amount.Should().Be(1);
+        a.Effect1_Quantity.Should().Be(1);
         a.Effect1.Should().Be(WarriorSkillEffectId.RaiseRange);
         a.Effect2.Should().Be(WarriorSkillEffectId.ClimbHigher);
-        a.Effect2Amount.Should().Be(0);
+        a.Effect2_Quantity.Should().Be(0);
         a.Effect3.Should().Be(WarriorSkillEffectId.ChanceToFlinchOpponent);
-        a.Effect3Amount.Should().Be(40);
+        a.Effect3_Quantity.Should().Be(40);
         a.Target.Should().Be(WarriorSkillTargetId.Self);
         a.Duration.Should().Be(3);
     }
@@ -36,23 +36,23 @@ public class WarriorSkillTests
         WarriorSkill a = new WarriorSkill(ConquestGameCode.VPYT)
         {
             Name = "Mayhem",
-            Effect1Amount = 1,
+            Effect1_Quantity = 1,
             Effect1 = WarriorSkillEffectId.RaiseRange,
             Effect2 = WarriorSkillEffectId.ClimbHigher,
-            Effect2Amount = 3,
+            Effect2_Quantity = 3,
             Effect3 = WarriorSkillEffectId.ChanceToFlinchOpponent,
-            Effect3Amount = 40,
+            Effect3_Quantity = 40,
             Target = WarriorSkillTargetId.SelfAndAllAllies,
             Duration = 3,
         };
 
         a.Name.Should().Be("Mayhem");
-        a.Effect1Amount.Should().Be(1);
+        a.Effect1_Quantity.Should().Be(1);
         a.Effect1.Should().Be(WarriorSkillEffectId.RaiseRange);
         a.Effect2.Should().Be(WarriorSkillEffectId.ClimbHigher);
-        a.Effect2Amount.Should().Be(3);
+        a.Effect2_Quantity.Should().Be(3);
         a.Effect3.Should().Be(WarriorSkillEffectId.ChanceToFlinchOpponent);
-        a.Effect3Amount.Should().Be(40);
+        a.Effect3_Quantity.Should().Be(40);
         a.Target.Should().Be(WarriorSkillTargetId.SelfAndAllAllies);
         a.Duration.Should().Be(3);
 

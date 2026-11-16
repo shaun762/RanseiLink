@@ -17,7 +17,7 @@ public class EpisodeTests
 
         a.UnlockCondition.Should().Be(EpisodeId.TheLegendOfRansei);
         a.Difficulty.Should().Be(1);
-        a.Order.Should().Be(12);
+        a.ScenarioWarrior.Should().Be(12);
         a.Scenario.Should().Be(ScenarioId.ShingenVsKenshin);
     }
 
@@ -28,13 +28,13 @@ public class EpisodeTests
         {
             UnlockCondition = EpisodeId.ADateWithDestiny,
             Difficulty = 4,
-            Order = 10,
+            ScenarioWarrior = 10,
             Scenario = ScenarioId.UniteRansei
         };
 
         a.UnlockCondition.Should().Be(EpisodeId.ADateWithDestiny);
         a.Difficulty.Should().Be(4);
-        a.Order.Should().Be(10);
+        a.ScenarioWarrior.Should().Be(10);
         a.Scenario.Should().Be(ScenarioId.UniteRansei);
     }
 }

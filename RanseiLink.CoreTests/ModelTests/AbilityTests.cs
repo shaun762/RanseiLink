@@ -18,10 +18,10 @@ public class AbilityTests
         });
 
         a.Name.Should().Be("Last Bastion");
-        a.Effect1Amount.Should().Be(2);
+        a.Effect1_Quantity.Should().Be(2);
         a.Effect1.Should().Be(AbilityEffectId.IncreaseUserAttack);
         a.Effect2.Should().Be(AbilityEffectId.IncreaseUserDefence);
-        a.Effect2Amount.Should().Be(2);
+        a.Effect2_Quantity.Should().Be(2);
     }
 
     [Fact]
@@ -39,17 +39,17 @@ public class AbilityTests
         Ability a = new Ability
         {
             Name = "Last Bastion",
-            Effect1Amount = 2,
+            Effect1_Quantity = 2,
             Effect1 = AbilityEffectId.IncreaseUserAttack,
             Effect2 = AbilityEffectId.IncreaseUserDefence,
-            Effect2Amount = 2
+            Effect2_Quantity = 2
         };
 
         a.Name.Should().Be("Last Bastion");
-        a.Effect1Amount.Should().Be(2);
+        a.Effect1_Quantity.Should().Be(2);
         a.Effect1.Should().Be(AbilityEffectId.IncreaseUserAttack);
         a.Effect2.Should().Be(AbilityEffectId.IncreaseUserDefence);
-        a.Effect2Amount.Should().Be(2);
+        a.Effect2_Quantity.Should().Be(2);
 
         a.Data.Should().Equal(lastBastionData);
     }
