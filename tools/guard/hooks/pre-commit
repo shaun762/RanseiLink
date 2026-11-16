@@ -1,0 +1,3 @@
+#!/bin/sh
+# ROM-handling guard (AGENTS.md): refuse to commit ROMs, saves, dumps or unexplained binaries.
+exec "$(cd "$(dirname "$0")" && pwd)/run-guard.sh" Staged

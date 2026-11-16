@@ -4,6 +4,20 @@ Evidence tags: **[C]** confirmed by a test run in this session · **[S]** third-
 
 > **You never upload your ROM anywhere.** Everything below runs on your laptop. The ROM is only *read* from where it already lives and *copied* inside your own computer. Nothing in this setup contacts the internet except `winget` (only if you pass `-InstallMissing` and confirm), and nothing is sent to GitHub or any AI service.
 
+## 0. ROM-handling rules (permanent; see `AGENTS.md`)
+
+The ROM, anything derived from it (dumps, decompressed code, `gap.bin`, extracted assets), saves and save states **never leave your computer**: not to GitHub, not to Claude/ChatGPT, not to cloud storage. Only *text* diagnostics are shared, and only after redaction. These rules are enforced in code where possible:
+
+| Safeguard | What it does | How to use it |
+|---|---|---|
+| `.gitignore` | ignores ROM/save/state/dump/recon names | automatic |
+| `tools/guard/Test-RepoForRomData.ps1` | inspects file **content** (a renamed ROM is still caught), unexplained binaries, archives, oversize files | `.\tools\guard\Install-Guards.ps1` once per clone enables the `pre-commit` and `pre-push` hooks; CI runs it on every PR |
+| Workspace location checks | setup and RomRecon refuse git working trees **and** OneDrive/Dropbox/Google Drive/iCloud/Box/MEGA/pCloud/Nextcloud locations | automatic |
+| No-network tests | prove the scripts and RomRecon contain no network code or networking assembly | automatic (CI) |
+| `tools/windows/Export-ShareableText.ps1` | refuses binary/ROM-like files, redacts user name, paths, computer name, e-mail, credentials, tokens, IP/MAC; writes a new file | `.\tools\windows\Export-ShareableText.ps1 <report.txt> -Show`, read it, then share |
+
+Limits: hooks can be bypassed with `--no-verify` (CI still flags it afterwards) and redaction is pattern-based. Always read what you are about to share.
+
 ## 1. The one command
 
 1. Get the repository onto your laptop (pick one):

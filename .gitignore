@@ -419,3 +419,6 @@ gap.bin
 recon_*/
 rom_dumps/
 PokemonConquestDev/
+*.dsi
+*.savestate
+shareable/

@@ -101,6 +101,40 @@ public class CliTests : IDisposable
     }
 
     [Fact]
+    public void Out_inside_a_cloud_synchronised_folder_is_refused_even_with_allow_in_repo()
+    {
+        var rom = MakeRom();
+        foreach (var leaf in new[] { "OneDrive", "OneDrive - Personal", "Dropbox", "Google Drive", "iCloudDrive" })
+        {
+            var target = Path.Combine(_dir, leaf, "diag");
+            var (code, _, stderr) = Run("all", rom, "--out", target);
+            Assert.Equal(Cli.OutputRefused, code);
+            Assert.Contains("cloud-synchronised", stderr);
+            Assert.False(Directory.Exists(target), leaf);
+            Assert.Equal(Cli.OutputRefused, Run("all", rom, "--out", target, "--allow-in-repo").code);
+        }
+    }
+
+    [Fact]
+    public void Out_with_a_sync_marker_folder_in_an_ancestor_is_refused()
+    {
+        var root = Path.Combine(_dir, "synced");
+        Directory.CreateDirectory(Path.Combine(root, ".dropbox"));
+        Assert.Equal(Cli.OutputRefused, Run("all", MakeRom(), "--out", Path.Combine(root, "x", "y")).code);
+    }
+
+    [Fact]
+    public void Out_through_a_symlink_into_a_cloud_folder_is_refused()
+    {
+        var cloud = Path.Combine(_dir, "OneDrive", "real");
+        Directory.CreateDirectory(cloud);
+        var link = Path.Combine(_dir, "innocent");
+        try { Directory.CreateSymbolicLink(link, cloud); }
+        catch (Exception e) when (e is UnauthorizedAccessException or IOException) { return; } // symlinks need privileges on some Windows setups
+        Assert.Equal(Cli.OutputRefused, Run("all", MakeRom(), "--out", Path.Combine(link, "diag")).code);
+    }
+
+    [Fact]
     public void Compressed_overlay_is_decompressed_and_scanned_and_extracted_on_request()
     {
         var nds = FakeConquest.Rom();

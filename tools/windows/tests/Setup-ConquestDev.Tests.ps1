@@ -420,6 +420,49 @@ Describe 'Isolated launch cannot reach the real playthrough' {
     }
 }
 
+Describe 'Cloud-synchronised locations are refused' {
+    It 'recognises well-known sync folder names anywhere in the path' {
+        foreach ($leaf in 'OneDrive', 'OneDrive - Personal', 'OneDrive - Contoso Ltd', 'Dropbox', 'Dropbox (Personal)', 'Google Drive', 'GoogleDrive', 'My Drive', 'iCloudDrive', 'Box', 'MEGA', 'pCloud Drive', 'Nextcloud') {
+            Test-IsCloudSyncedPath ([IO.Path]::Combine($TestDrive, $leaf, 'Games', 'PokemonConquestDev')) | Should -Not -BeNullOrEmpty -Because $leaf
+        }
+    }
+    It 'does not flag ordinary folders' {
+        Test-IsCloudSyncedPath ([IO.Path]::Combine($TestDrive, 'PokemonConquestDev')) | Should -BeNullOrEmpty
+        Test-IsCloudSyncedPath ([IO.Path]::Combine($TestDrive, 'OneDriveBackupNotes', 'x')) | Should -BeNullOrEmpty
+    }
+    It 'honours the OneDrive environment variables' {
+        $od = [IO.Path]::Combine($TestDrive, 'redirected_od'); New-Item -ItemType Directory -Path $od | Out-Null
+        $old = $env:OneDriveConsumer; $env:OneDriveConsumer = $od
+        try {
+            Test-IsCloudSyncedPath ([IO.Path]::Combine($od, 'x', 'ws')) | Should -Match 'OneDriveConsumer'
+            Test-IsCloudSyncedPath ([IO.Path]::Combine($TestDrive, 'elsewhere')) | Should -BeNullOrEmpty
+        }
+        finally { $env:OneDriveConsumer = $old }
+    }
+    It 'detects sync marker folders in any ancestor' {
+        $root = [IO.Path]::Combine($TestDrive, 'dbx_root'); New-Item -ItemType Directory -Path ([IO.Path]::Combine($root, '.dropbox')), ([IO.Path]::Combine($root, 'a', 'b')) -Force | Out-Null
+        Test-IsCloudSyncedPath ([IO.Path]::Combine($root, 'a', 'b', 'ws')) | Should -Match 'sync marker'
+    }
+    It 'follows a junction/symlink into a cloud folder' {
+        $cloud = [IO.Path]::Combine($TestDrive, 'OneDrive', 'inner'); New-Item -ItemType Directory -Path $cloud -Force | Out-Null
+        $link = [IO.Path]::Combine($TestDrive, 'innocent_link')
+        $type = if ([Environment]::OSVersion.Platform -eq 'Win32NT') { 'Junction' } else { 'SymbolicLink' }
+        New-Item -ItemType $type -Path $link -Target $cloud | Out-Null
+        Test-IsCloudSyncedPath $link | Should -Match 'link'
+    }
+    It 'Assert-WorkspaceLocationSafe throws for a workspace in OneDrive and the message explains why' {
+        $ra = [pscustomobject]@{ Dir = [IO.Path]::Combine($TestDrive, 'RAx'); SaveDir = $null; StateDir = $null }
+        { Assert-WorkspaceLocationSafe ([IO.Path]::Combine($TestDrive, 'OneDrive', 'PokemonConquestDev')) $ra } | Should -Throw '*cloud-synchronised*'
+    }
+}
+
+Describe 'The setup script makes no network calls' {
+    It 'contains no network primitives (winget, used only with -InstallMissing and confirmation, is the one external program)' {
+        $text = Get-Content -LiteralPath $script:ScriptPath -Raw
+        $text | Should -Not -Match '(?i)Invoke-WebRequest|Invoke-RestMethod|\biwr\b|\birm\b|WebClient|HttpClient|Start-BitsTransfer|System\.Net|Send-MailMessage|\bcurl\b|\bwget\b|Test-NetConnection|\bscp\b|\bssh\b|Install-Module|Save-Module'
+    }
+}
+
 Describe 'Confirmation helper' {
     It 'answers no when non-interactive' {
         $script:NonInteractiveMode = $true

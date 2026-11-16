@@ -1,0 +1,62 @@
+# Binary files that may live in this repository. Paths/globs are repo-relative with forward slashes.
+# Adding a line here is a reviewed change: only add ORIGINAL work, never anything extracted from a ROM.
+#
+# Baseline snapshot (exact paths) of the binaries that were already tracked when the guard was introduced:
+# images, fonts, and the ROM-derived graphics samples that upstream committed under RanseiLink.CoreTests/TestData.
+# That TestData folder is NOT open for new files: new samples must not be added (AGENTS.md rule 2).
+
+RanseiLink.Core/Resources/move_bg.png
+RanseiLink.Core/Resources/move_overlay.png
+RanseiLink.CoreTests/TestData/test_cma_ignis.nanr
+RanseiLink.CoreTests/TestData/test_cma_ignis.ncer
+RanseiLink.CoreTests/TestData/test_cma_ignis.ncgr
+RanseiLink.CoreTests/TestData/test_cma_ignis.nclr
+RanseiLink.CoreTests/TestData/test_default.nanr
+RanseiLink.CoreTests/TestData/test_inst_powerplant.nanr
+RanseiLink.CoreTests/TestData/test_inst_powerplant.ncer
+RanseiLink.CoreTests/TestData/test_inst_powerplant.ncgr
+RanseiLink.CoreTests/TestData/test_inst_powerplant.nclr
+RanseiLink.CoreTests/TestData/test_ki2_aurora_anim.nanr
+RanseiLink.CoreTests/TestData/test_ki2_aurora_anim.ncer
+RanseiLink.CoreTests/TestData/test_ki2_aurora_anim.ncgr
+RanseiLink.CoreTests/TestData/test_ki2_aurora_anim.nclr
+RanseiLink.CoreTests/TestData/test_kico_aurora.nanr
+RanseiLink.CoreTests/TestData/test_kico_aurora.ncer
+RanseiLink.CoreTests/TestData/test_kico_aurora.ncgr
+RanseiLink.CoreTests/TestData/test_kico_aurora.nclr
+RanseiLink.CoreTests/TestData/test_kico_ignis.link
+RanseiLink.CoreTests/TestData/test_kico_ignis.nanr
+RanseiLink.CoreTests/TestData/test_kico_ignis.ncer
+RanseiLink.CoreTests/TestData/test_kico_ignis.ncgr
+RanseiLink.CoreTests/TestData/test_kico_ignis.nclr
+RanseiLink.CoreTests/TestData/test_leafeon.nsbtp
+RanseiLink.CoreTests/TestData/test_leafeon.pat
+RanseiLink.CoreTests/TestData/test_map0.nsbmd
+RanseiLink.CoreTests/TestData/test_map2.nsbmd
+RanseiLink.CoreTests/TestData/test_map2.nsbta
+RanseiLink.CoreTests/TestData/test_map2.nsbtx
+RanseiLink.CoreTests/TestData/test_map2.pac
+RanseiLink.CoreTests/TestData/test_map3.nsbmd
+RanseiLink.CoreTests/TestData/test_map5.nsbmd
+RanseiLink.CoreTests/TestData/test_minimap_9.ncer
+RanseiLink.CoreTests/TestData/test_minimap_9.ncgr
+RanseiLink.CoreTests/TestData/test_minimap_9.nclr
+RanseiLink.CoreTests/TestData/test_minimap_9.png
+RanseiLink.CoreTests/TestData/test_multi.nclr
+RanseiLink.CoreTests/TestData/test_parts.ncgr
+RanseiLink.CoreTests/TestData/test_pokemonxl.ncer
+RanseiLink.CoreTests/TestData/test_pokemonxl.ncgr
+RanseiLink.CoreTests/TestData/test_pokemonxl.nclr
+RanseiLink.CoreTests/TestData/test_pokemonxl.png
+RanseiLink.CoreTests/TestData/test_screen.ncgr
+RanseiLink.CoreTests/TestData/test_single.nclr
+RanseiLink.CoreTests/TestData/test_warriorbattleintro.ncer
+RanseiLink.CoreTests/TestData/test_warriorbattleintro.ncgr
+RanseiLink.CoreTests/TestData/test_warriorbattleintro.nclr
+RanseiLink.CoreTests/TestData/test_warriorbattleintro.png
+RanseiLink.Windows/Fonts/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf
+RanseiLink.Windows/RanseiLink.ico
+RanseiLink.Windows/RanseiLinkIcon.png
+RanseiLink.XP/Assets/Fonts/MaterialSymbolsOutlined.ttf
+RanseiLink.XP/Assets/ranseilink-logo.ico
+build_data/RanseiLink.icns

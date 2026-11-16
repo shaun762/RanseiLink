@@ -34,6 +34,14 @@ public static class OutputGuard
                     "Choose an --out directory outside the repository (e.g. <workspace>\\diagnostics), or pass --allow-in-repo if you are certain it is git-ignored.");
             }
         }
+        // Cloud-synchronised folders are refused unconditionally: --allow-in-repo does NOT override this.
+        var cloud = CloudSync.Detect(full);
+        if (cloud is not null)
+        {
+            throw new RefusedException(
+                $"Refusing to write analysis output to '{full}': it is in a cloud-synchronised location ({cloud}). Reports and extracted code derive from a copyrighted ROM and must stay on this computer. " +
+                "Choose an --out directory outside OneDrive, Dropbox, Google Drive, iCloud, Box, MEGA, pCloud and similar (e.g. <workspace>\\diagnostics).");
+        }
         Directory.CreateDirectory(full);
         string stamp = (now ?? DateTime.Now).ToString("yyyyMMdd-HHmmss");
         string name = $"recon_{sha256[..8]}_{stamp}";
