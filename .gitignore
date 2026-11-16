@@ -400,3 +400,22 @@ _UpgradeReport_Files/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+
+# --- Pokemon Conquest expansion work (PCE-002): never commit ROMs, saves or anything derived from them ---
+*.nds
+*.srl
+*.sav
+*.srm
+*.dsv
+*.state
+*.state[0-9]
+*.state.auto
+arm9*.bin
+arm7*.bin
+overlay*.bin
+*_decompressed.bin
+gap.bin
+recon_*/
+rom_dumps/
+PokemonConquestDev/

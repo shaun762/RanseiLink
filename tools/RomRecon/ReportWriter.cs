@@ -91,7 +91,11 @@ public static class ReportWriter
     private static void Tables(StringBuilder sb, ReconReport r)
     {
         Title(sb, "Pokemon-related tables (capacity check vs. audit assumptions)");
-        foreach (var t in r.Tables) { sb.AppendLine($"  [{t.Status,-10}] {t.Table}: {t.Observation}"); }
+        foreach (var t in r.Tables)
+        {
+            string at = t.RomOffset >= 0 ? $" @ROM+0x{t.RomOffset:X}" : "";
+            sb.AppendLine($"  [{t.Status,-10}] {t.Table}{at}: {t.Observation}");
+        }
     }
 
     private static void Scan(StringBuilder sb, ReconReport r)

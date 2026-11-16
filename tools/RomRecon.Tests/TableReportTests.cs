@@ -23,6 +23,15 @@ public class TableReportTests
     }
 
     [Fact]
+    public void Every_table_finding_carries_its_rom_file_offset()
+    {
+        var findings = Report(FakeConquest.Rom());
+        var pokemon = findings.First(f => f.Table == "Pokemon.dat");
+        Assert.True(pokemon.RomOffset > 0 && pokemon.RomOffset % 0x200 == 0);
+        Assert.All(findings.Where(f => f.Path.Length > 0), f => Assert.True(f.RomOffset > 0, f.Table));
+    }
+
+    [Fact]
     public void Sentinel_entries_are_counted_in_every_scenario()
     {
         var findings = Report(FakeConquest.Rom()).Where(f => f.Table.StartsWith("ScenarioPokemon[")).ToList();

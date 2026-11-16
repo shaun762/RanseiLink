@@ -15,7 +15,7 @@ Tags: **[C]** confirmed · **[S]** third-party · **[H]** hypothesis · **[U]** 
 
 | M | Name | Output | Gate (go if…) |
 |---|---|---|---|
-| **M0** | Restore a regression net | Console + CoreTests compile; stale tests reconciled with the owner; Linux CI for L0–L3; user-run L4 baseline on NA/JP | `dotnet test` green on synthetic tests; L4 baseline report exists |
+| **M0** *(done in PCE-002, pending review)* | Restore a regression net | Console + CoreTests compile; stale tests reconciled with the owner; Linux CI for L0–L3; user-run L4 baseline on NA/JP | `dotnet test` green on synthetic tests; L4 baseline report exists |
 | **M1** | Reconnaissance (Experiment 0) | `findings/` report: where the game loads `Pokemon.dat` & friends; list of code sites referencing 200 / 0xC8 / 0x30 / 0x25C0 / strides | Every table in F‑01…F‑10 classified *file-derived* vs *code-constant*; ARM9 compression/overlay layout known |
 | **M2** | Data-layout probe (Experiment 1) | Observed behaviour of the game with a 201-record `Pokemon.dat` | Outcome matrix (§3.2) resolved for NA at minimum |
 | **M3** | **Proof of concept: species #201** (§4) | Patched ROM + patch tool + report | All PoC success criteria met on NA; JP recon documented |

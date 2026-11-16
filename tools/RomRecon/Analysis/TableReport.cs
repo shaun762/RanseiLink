@@ -6,7 +6,11 @@ namespace RomRecon.Analysis;
 public enum Status { Ok, Info, Unexpected, Missing }
 
 /// <summary>One observation about a Pokemon-related data table. Contains sizes, counts and aggregate statistics only - never game content.</summary>
-public sealed record TableFinding(string Table, string Path, long Size, Status Status, string Observation);
+public sealed record TableFinding(string Table, string Path, long Size, Status Status, string Observation)
+{
+    /// <summary>Absolute offset of the file inside the ROM image, or -1 if the file was not found / the finding is not about a single file.</summary>
+    public long RomOffset { get; init; } = -1;
+}
 
 /// <summary>
 /// Checks the structural assumptions recorded in docs/expansion/POKEMON_LIMIT_AUDIT.md (F-01...F-10) against a real ROM.
@@ -31,7 +35,7 @@ public static class TableReport
         ScenarioTables(rom, list);
         Kingdom(rom, list);
         Archives(rom, list);
-        return list;
+        return list.Select(f => f with { RomOffset = rom.FindFile(f.Path) is { } ff ? (long)ff.Start : -1L }).ToList();
     }
 
     private static NdsFile? Need(NdsRom rom, string path, List<TableFinding> list)
