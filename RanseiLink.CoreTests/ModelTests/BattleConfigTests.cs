@@ -16,11 +16,11 @@ public class BattleConfigTests
         });
 
         a.MapId.Should().Be(new MapId(1, 0));
-        a.UpperAtmosphereColor.Should().Be(new Rgb15(23, 8, 3));
-        a.MiddleAtmosphereColor.Should().Be(new Rgb15(13, 2, 0));
-        a.LowerAtmosphereColor.Should().Be(new Rgb15(7, 3, 1));
-        a.VictoryCondition.Should().Be(BattleVictoryConditionFlags.DefeatAllEnemies);
-        a.DefeatCondition.Should().Be(BattleVictoryConditionFlags.DefeatAllEnemies);
+        a.UpperSkyColor.Should().Be(new Rgb15(23, 8, 3));
+        a.MiddleSkyColor.Should().Be(new Rgb15(13, 2, 0));
+        a.LowerSkyColor.Should().Be(new Rgb15(7, 3, 1));
+        a.VictoryCondition.Should().Be((BattleVictoryConditionFlags)0 /* former "DefeatAllEnemies" = no flags */);
+        a.DefeatCondition.Should().Be((BattleVictoryConditionFlags)0 /* former "DefeatAllEnemies" = no flags */);
         a.NumberOfTurns.Should().Be(20);
     }
 
@@ -30,18 +30,18 @@ public class BattleConfigTests
         BattleConfig a = new BattleConfig()
         {
             MapId = new MapId(10, 1),
-            UpperAtmosphereColor = new Rgb15(9, 7, 21),
-            MiddleAtmosphereColor = new Rgb15(20, 19, 16),
-            LowerAtmosphereColor = new Rgb15(12, 11, 1),
+            UpperSkyColor = new Rgb15(9, 7, 21),
+            MiddleSkyColor = new Rgb15(20, 19, 16),
+            LowerSkyColor = new Rgb15(12, 11, 1),
             VictoryCondition = BattleVictoryConditionFlags.ClaimAllBanners | BattleVictoryConditionFlags.HoldAllBannersFor5Turns,
             DefeatCondition = BattleVictoryConditionFlags.ClaimAllBanners,
             NumberOfTurns = 17
         };
 
         a.MapId.Should().Be(new MapId(10, 1));
-        a.UpperAtmosphereColor.Should().Be(new Rgb15(9, 7, 21));
-        a.MiddleAtmosphereColor.Should().Be(new Rgb15(20, 19, 16));
-        a.LowerAtmosphereColor.Should().Be(new Rgb15(12, 11, 1));
+        a.UpperSkyColor.Should().Be(new Rgb15(9, 7, 21));
+        a.MiddleSkyColor.Should().Be(new Rgb15(20, 19, 16));
+        a.LowerSkyColor.Should().Be(new Rgb15(12, 11, 1));
         a.VictoryCondition.Should().Be(BattleVictoryConditionFlags.ClaimAllBanners | BattleVictoryConditionFlags.HoldAllBannersFor5Turns);
         a.DefeatCondition.Should().Be(BattleVictoryConditionFlags.ClaimAllBanners);
         a.NumberOfTurns.Should().Be(17);

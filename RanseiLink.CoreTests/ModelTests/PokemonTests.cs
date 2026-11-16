@@ -24,9 +24,9 @@ public class PokemonTests
         a.Ability3.Should().Be(AbilityId.Justified);
         a.Move.Should().Be(MoveId.PsychoCut);
         a.EvolutionCondition1.Should().Be(EvolutionConditionId.Item);
-        ((ItemId)a.QuantityForEvolutionCondition1).Should().Be(ItemId.DawnStone);
+        ((ItemId)a.EvolutionCondition1_Quantity1).Should().Be(ItemId.DawnStone);
         a.EvolutionCondition2.Should().Be(EvolutionConditionId.WarriorGender);
-        ((GenderId)a.QuantityForEvolutionCondition2).Should().Be(GenderId.Male);
+        ((GenderId)a.EvolutionCondition2_Quantity1).Should().Be(GenderId.Male);
         a.MovementRange.Should().Be(3);
         a.Hp.Should().Be(246);
         a.Atk.Should().Be(255);
@@ -56,9 +56,9 @@ public class PokemonTests
             Ability3 = AbilityId.Justified,
             Move = MoveId.PsychoCut,
             EvolutionCondition1 = EvolutionConditionId.Item,
-            QuantityForEvolutionCondition1 = (int)ItemId.DawnStone,
+            EvolutionCondition1_Quantity1 = (int)ItemId.DawnStone,
             EvolutionCondition2 = EvolutionConditionId.WarriorGender,
-            QuantityForEvolutionCondition2 = (int)GenderId.Male,
+            EvolutionCondition2_Quantity1 = (int)GenderId.Male,
             MovementRange = 3,
             Hp = 246,
             Atk = 255,
@@ -82,9 +82,9 @@ public class PokemonTests
         a.Ability3.Should().Be(AbilityId.Justified);
         a.Move.Should().Be(MoveId.PsychoCut);
         a.EvolutionCondition1.Should().Be(EvolutionConditionId.Item);
-        ((ItemId)a.QuantityForEvolutionCondition1).Should().Be(ItemId.DawnStone);
+        ((ItemId)a.EvolutionCondition1_Quantity1).Should().Be(ItemId.DawnStone);
         a.EvolutionCondition2.Should().Be(EvolutionConditionId.WarriorGender);
-        ((GenderId)a.QuantityForEvolutionCondition2).Should().Be(GenderId.Male);
+        ((GenderId)a.EvolutionCondition2_Quantity1).Should().Be(GenderId.Male);
         a.MovementRange.Should().Be(3);
         a.Hp.Should().Be(246);
         a.Atk.Should().Be(255);

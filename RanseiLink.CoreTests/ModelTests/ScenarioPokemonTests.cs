@@ -19,7 +19,7 @@ public class ScenarioPokemonTests
         a.AtkIv.Should().Be(15);
         a.DefIv.Should().Be(15);
         a.SpeIv.Should().Be(15);
-        a.Exp.Should().Be(1020);
+        a.Exp.Should().Be(510); // Models.xml (commit 11e8f03) moved Exp to bits 17-31; was 1020 under the old 16-31 layout
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class ScenarioPokemonTests
             AtkIv = 15,
             DefIv = 15,
             SpeIv = 15,
-            Exp = 1020
+            Exp = 510
         };
 
         var expected = new byte[]
@@ -47,7 +47,7 @@ public class ScenarioPokemonTests
         a.AtkIv.Should().Be(15);
         a.DefIv.Should().Be(15);
         a.SpeIv.Should().Be(15);
-        a.Exp.Should().Be(1020);
+        a.Exp.Should().Be(510); // Models.xml (commit 11e8f03) moved Exp to bits 17-31; was 1020 under the old 16-31 layout
 
         a.Data.Should().Equal(expected);
     }

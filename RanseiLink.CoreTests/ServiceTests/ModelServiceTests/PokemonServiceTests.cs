@@ -16,7 +16,7 @@ public class PokemonServiceTests
     {
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void ReadsCorrectValues()
     {
         IPokemonService service = new PokemonService(new ModInfo() { FolderPath = TestConstants.TestModFolder });
@@ -49,7 +49,7 @@ public class PokemonServiceTests
         rayquaza.Data.Should().Equal(expectedRayquazaData);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void LoadsEvolutionsCorrectly()
     {
         IPokemonService service = new PokemonService(new ModInfo() { FolderPath = TestConstants.TestModFolder });
@@ -66,13 +66,13 @@ public class PokemonServiceTests
         dewott.Evolutions.Should().ContainSingle().Which.Should().Be(PokemonId.Samurott);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void IdenticalThroughLoadSaveCycle_NorthAmerica()
     {
         IdenticalThroughLoadSaveCycle(TestConstants.TestModFolder);
     }
 
-    [Fact]
+    [RomFixtureFact("TestModJapan")]
     public void IdenticalThroughLoadSaveCycle_Japan()
     {
         IdenticalThroughLoadSaveCycle(TestConstants.TestModJapanFolder);
@@ -91,7 +91,7 @@ public class PokemonServiceTests
         File.Delete(temp);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void OutOfRangeThrowsException()
     {
         IPokemonService service = new PokemonService(new ModInfo() { FolderPath = TestConstants.TestModFolder });

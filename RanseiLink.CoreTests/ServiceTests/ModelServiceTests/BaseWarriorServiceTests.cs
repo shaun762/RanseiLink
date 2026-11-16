@@ -16,7 +16,7 @@ public class BaseWarriorServiceTests
     {
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void ReadsCorrectValues()
     {
         IBaseWarriorService service = new BaseWarriorService(new ModInfo() { FolderPath = TestConstants.TestModFolder });
@@ -34,7 +34,7 @@ public class BaseWarriorServiceTests
         mobB.Data.Should().Equal(expectedMobBData);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void LoadsNamesCorrectly()
     {
         IBaseWarriorService service = new BaseWarriorService(new ModInfo() { FolderPath = TestConstants.TestModFolder });
@@ -47,13 +47,13 @@ public class BaseWarriorServiceTests
         nameTable.GetEntry(shingen.Name).Should().Be("Shingen");
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void IdenticalThroughLoadSaveCycle_NorthAmerica()
     {
         IdenticalThroughLoadSaveCycle(TestConstants.TestModFolder);
     }
 
-    [Fact]
+    [RomFixtureFact("TestModJapan")]
     public void IdenticalThroughLoadSaveCycle_Japan()
     {
         IdenticalThroughLoadSaveCycle(TestConstants.TestModJapanFolder);
@@ -74,7 +74,7 @@ public class BaseWarriorServiceTests
         File.Delete(temp);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void OutOfRangeThrowsException()
     {
         IBaseWarriorService service = new BaseWarriorService(new ModInfo() { FolderPath = TestConstants.TestModFolder });

@@ -77,7 +77,7 @@ public class ScriptTests
         input.Evolutions.Should().ContainSingle().Which.Should().Be(PokemonId.Glaceon);
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void EnumerateWarriorsTest()
     {
         var warriorService = BaseWarriorService.Load(Path.Combine(TestModFolder, Constants.BaseBushouRomPath));
@@ -99,7 +99,7 @@ public class ScriptTests
         }
     }
 
-    [Fact]
+    [RomFixtureFact]
     public void EnumerateByIdTest()
     {
         // this test is important because it was necessary to use Enumerable.Range()

@@ -5,7 +5,7 @@ namespace RanseiLink.CoreTests.MapTests;
 
 public class MapLoadTests
 {
-    [Fact]
+    [RomFixtureFact]
     public void IdenticalThroughLoadSaveCycle()
     {
         foreach (var file in Directory.GetFiles(Path.Combine(TestConstants.TestModFolder, RanseiLink.Core.Services.Constants.MapFolderPath)))

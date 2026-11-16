@@ -44,6 +44,11 @@ dotnet test
 
 **Consequence:** at the audited commit, the project has **no trustworthy automatic regression net**. Establishing one is a prerequisite (Milestone M0 in IMPLEMENTATION_PLAN.md).
 
+> **Update (PCE-002).** The baseline problems recorded above were repaired on branch `feature/pce-002-dev-environment`:
+> Console and CoreTests now compile; CoreTests = 157 passed / 0 failed / 18 skipped (ROM fixtures skip instead of failing), ConsoleTests = 2 passed / 2 skipped;
+> CI workflow added. Details, the rename table and the two judgement calls are in BASELINE_REPAIR.md. The L0 layer of §4 is therefore in place; L3 now has a first
+> synthetic-NDS builder (`tools/RomRecon.Tests/Synthetic.cs`) and ROM_ANALYSIS.md covers the read-only part of L4.
+
 ## 3. Principles for the expansion test strategy
 
 1. **Vanilla must stay byte-identical.** With the layout descriptor absent/`vanilla`, every service and patch builder must produce exactly today's bytes.

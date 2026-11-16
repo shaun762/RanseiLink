@@ -1,0 +1,85 @@
+name: CI
+
+# Build + test checks that need NO ROM and NO copyrighted data. Tests that need ROM-derived fixtures report as "skipped"
+# (see docs/expansion/BASELINE_REPAIR.md).
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dotnet:
+    name: .NET build + tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build
+        run: |
+          dotnet build RanseiLink.Core/RanseiLink.Core.csproj -c Release
+          dotnet build RanseiLink.GuiCore/RanseiLink.GuiCore.csproj -c Release
+          dotnet build RanseiLink.Console/RanseiLink.Console.csproj -c Release
+          dotnet build tools/RomRecon/RomRecon.csproj -c Release
+      - name: Test - CoreTests
+        run: dotnet test RanseiLink.CoreTests/RanseiLink.CoreTests.csproj -c Release
+      - name: Test - ConsoleTests
+        run: dotnet test RanseiLink.ConsoleTests/RanseiLink.ConsoleTests.csproj -c Release
+      - name: Test - RomRecon
+        run: dotnet test tools/RomRecon.Tests/RomRecon.Tests.csproj -c Release
+
+  windows:
+    name: Windows (WPF build, RomRecon, PowerShell 5.1 + 7 tests)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build WPF app
+        run: dotnet build RanseiLink.Windows/RanseiLink.Windows.csproj -c Release
+      - name: Test - RomRecon (Windows paths and file sharing)
+        run: dotnet test tools/RomRecon.Tests/RomRecon.Tests.csproj -c Release
+      - name: Lint Setup-ConquestDev.ps1 (PSScriptAnalyzer, PowerShell 5.1 + 7 syntax)
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -SkipPublisherCheck
+          $r = Invoke-ScriptAnalyzer -Path tools/windows/Setup-ConquestDev.ps1 -Settings tools/windows/PSScriptAnalyzerSettings.psd1
+          $r | Format-Table RuleName, Line, Message -AutoSize -Wrap
+          if (@($r).Count -gt 0) { throw "PSScriptAnalyzer reported $(@($r).Count) finding(s)." }
+      - name: Pester - Windows PowerShell 5.1 (the shell stock Windows ships with)
+        shell: powershell
+        run: |
+          Install-Module Pester -MinimumVersion 5.5.0 -Scope CurrentUser -Force -SkipPublisherCheck
+          Import-Module Pester -MinimumVersion 5.5.0
+          $r = Invoke-Pester -Path tools/windows/tests -PassThru -Output Detailed
+          if ($r.FailedCount -gt 0) { throw "$($r.FailedCount) Pester test(s) failed on PowerShell $($PSVersionTable.PSVersion)." }
+      - name: Pester - PowerShell 7
+        shell: pwsh
+        run: |
+          Install-Module Pester -MinimumVersion 5.5.0 -Scope CurrentUser -Force -SkipPublisherCheck
+          Import-Module Pester -MinimumVersion 5.5.0
+          $r = Invoke-Pester -Path tools/windows/tests -PassThru -Output Detailed
+          if ($r.FailedCount -gt 0) { throw "$($r.FailedCount) Pester test(s) failed on PowerShell $($PSVersionTable.PSVersion)." }
+
+  windows-wpf-tests:
+    name: WPF view-model tests (experimental, non-blocking)
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Test - WindowsTests
+        run: dotnet test RanseiLink.WindowsTests/RanseiLink.WindowsTests.csproj -c Release

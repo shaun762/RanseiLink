@@ -29,13 +29,13 @@ public class BaseWarriorTests
         a.Wisdom.Should().Be(78);
         a.Charisma.Should().Be(75);
         a.Capacity.Should().Be(5);
-        a.RankUp.Should().Be(WarriorId.Nene_2);
+        a.RankUpWarrior.Should().Be(WarriorId.Nene_2);
         a.RankUpCondition1.Should().Be(RankUpConditionId.Pokemon);
         a.RankUpCondition2.Should().Be(RankUpConditionId.MonotypeGallery);
-        ((TypeId)a.Quantity1ForRankUpCondition).Should().Be(TypeId.Poison);
-        a.Quantity2ForRankUpCondition.Should().Be(511);
-        a.RankUpPokemon1.Should().Be(PokemonId.Golbat);
-        a.RankUpPokemon2.Should().Be(PokemonId.Crobat);
+        ((TypeId)a.RankUpCondition2_Quantity1).Should().Be(TypeId.Poison);
+        a.RankUpCondition2_Quantity2.Should().Be(511);
+        ((PokemonId)a.RankUpCondition1_Quantity1).Should().Be(PokemonId.Golbat);
+        ((PokemonId)a.RankUpCondition1_Quantity2).Should().Be(PokemonId.Crobat);
         a.RankUpLink.Should().Be(60);
     }
 
@@ -57,13 +57,13 @@ public class BaseWarriorTests
             Wisdom = 24,
             Charisma = 68,
             Capacity = 2,
-            RankUp = WarriorId.Nobunaga_1,
+            RankUpWarrior = WarriorId.Nobunaga_1,
             RankUpCondition1 = RankUpConditionId.AtLeastNGalleryPokemon,
             RankUpCondition2 = RankUpConditionId.WarriorInSameKingdom,
-            Quantity1ForRankUpCondition = 34,
-            Quantity2ForRankUpCondition = 17,
-            RankUpPokemon1 = PokemonId.Beedrill,
-            RankUpPokemon2 = PokemonId.Blitzle,
+            RankUpCondition2_Quantity1 = 34,
+            RankUpCondition2_Quantity2 = 17,
+            RankUpCondition1_Quantity1 = (int)PokemonId.Beedrill,
+            RankUpCondition1_Quantity2 = (int)PokemonId.Blitzle,
             RankUpLink = 20,
         };
 
@@ -79,13 +79,13 @@ public class BaseWarriorTests
         a.Wisdom.Should().Be(24);
         a.Charisma.Should().Be(68);
         a.Capacity.Should().Be(2);
-        a.RankUp.Should().Be(WarriorId.Nobunaga_1);
+        a.RankUpWarrior.Should().Be(WarriorId.Nobunaga_1);
         a.RankUpCondition1.Should().Be(RankUpConditionId.AtLeastNGalleryPokemon);
         a.RankUpCondition2.Should().Be(RankUpConditionId.WarriorInSameKingdom);
-        a.Quantity1ForRankUpCondition.Should().Be(34);
-        a.Quantity2ForRankUpCondition.Should().Be(17);
-        a.RankUpPokemon1.Should().Be(PokemonId.Beedrill);
-        a.RankUpPokemon2.Should().Be(PokemonId.Blitzle);
+        a.RankUpCondition2_Quantity1.Should().Be(34);
+        a.RankUpCondition2_Quantity2.Should().Be(17);
+        ((PokemonId)a.RankUpCondition1_Quantity1).Should().Be(PokemonId.Beedrill);
+        ((PokemonId)a.RankUpCondition1_Quantity2).Should().Be(PokemonId.Blitzle);
         a.RankUpLink.Should().Be(20);
     }
 }

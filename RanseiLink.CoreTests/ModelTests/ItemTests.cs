@@ -32,7 +32,7 @@ public class ItemTests
         a.CraftingIngredient2Amount.Should().Be(0);
         a.UnknownItem.Should().Be(ItemId.Default);
         a.ShopPriceMultiplier.Should().Be(3);
-        a.QuantityForEffect.Should().Be(20);
+        a.Effect_Quantity.Should().Be(20);
 
         a.GetPurchasable(KingdomId.Fontaine).Should().BeTrue();
         a.GetPurchasable(KingdomId.Greenleaf).Should().BeFalse();
@@ -54,7 +54,7 @@ public class ItemTests
             CraftingIngredient2Amount = 21,
             UnknownItem = ItemId.DryIce,
             ShopPriceMultiplier = 12,
-            QuantityForEffect = 8
+            Effect_Quantity = 8
         };
 
         a.SetPurchasable(KingdomId.Chrysalia, true);
@@ -71,7 +71,7 @@ public class ItemTests
         a.CraftingIngredient2Amount.Should().Be(21);
         a.UnknownItem.Should().Be(ItemId.DryIce);
         a.ShopPriceMultiplier.Should().Be(12);
-        a.QuantityForEffect.Should().Be(8);
+        a.Effect_Quantity.Should().Be(8);
 
         a.GetPurchasable(KingdomId.Chrysalia).Should().BeTrue();
         a.GetPurchasable(KingdomId.Dragnor).Should().BeFalse();

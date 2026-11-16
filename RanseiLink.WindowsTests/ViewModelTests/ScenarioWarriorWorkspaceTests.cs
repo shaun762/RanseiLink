@@ -2,6 +2,7 @@
 using RanseiLink.Core.Models;
 using RanseiLink.Core.Services;
 using RanseiLink.Core.Services.ModelServices;
+using RanseiLink.GuiCore.Services;
 using RanseiLink.GuiCore.ViewModels;
 using RanseiLink.Windows.Services;
 using RanseiLink.Windows.ViewModels;
@@ -52,24 +53,25 @@ public  class ScenarioWarriorWorkspaceTests
             csas.Setup(x => x.Retrieve(i)).Returns(armies[i]);
         }
 
+        // Upstream commit 308d988 ("Use factory genie") replaced the Func<> factories with FactoryGenie-generated classes whose
+        // constructors take the injected services (the [FactoryParam] arguments are supplied later by Create(...)).
+        var spriteProvider = new Mock<ICachedSpriteProvider>().Object;
         vm = new ScenarioWarriorWorkspaceViewModel(
-            () => new SwMiniViewModel(
+            new SwMiniViewModelFactory(
                 sps.Object,
                 new Mock<IBaseWarriorService>().Object,
-                new Mock<ICachedSpriteProvider>().Object,
+                spriteProvider,
                 new Mock<IKingdomService>().Object,
                 ss.Object
                 ),
-            () => new SwKingdomMiniViewModel(
+            new SwKingdomMiniViewModelFactory(
                 sks.Object,
-                new Mock<IBaseWarriorService>().Object,
-                sws.Object,
-                new Mock<ICachedSpriteProvider>().Object,
+                spriteProvider,
                 ss.Object,
                 ins.Object
                 ),
-            () => new SwSimpleKingdomMiniViewModel(
-                new Mock<ICachedSpriteProvider>().Object,
+            new SwSimpleKingdomMiniViewModelFactory(
+                spriteProvider,
                 ins.Object
                 ),
             ins.Object,
