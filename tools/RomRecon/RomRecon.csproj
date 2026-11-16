@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    RomRecon: READ-ONLY Nintendo DS ROM reconnaissance for Pokemon Conquest.
+    No dependencies. Never writes to the ROM; see docs/expansion/ROM_ANALYSIS.md.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>RomRecon</AssemblyName>
+    <RootNamespace>RomRecon</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+</Project>
