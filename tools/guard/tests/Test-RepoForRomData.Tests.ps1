@@ -159,6 +159,33 @@ Describe 'Modes on a real git repository' {
     }
 }
 
+Describe 'Regression: launched through a wrapper, and failing closed' {
+    It 'works when launched the way GitHub Actions runs a pwsh step (dot-sourced wrapper script, -Mode All)' {
+        $repo = New-TestRepo
+        [IO.File]::WriteAllBytes([IO.Path]::Combine($repo, 'sneaky.bin'), (New-FakeNdsBytes)); git -C $repo add sneaky.bin; git -C $repo commit -q -m s
+        $wrapper = Join-Path $TestDrive 'wrapper.ps1'
+        [IO.File]::WriteAllText($wrapper, "& '$($script:GuardScript)' -Mode All -RepoRoot '$repo'`nexit `$LASTEXITCODE")
+        $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+        try { $out = & $script:PwshExe @($script:PwshPrefix + @('-NoProfile', '-Command', ". '$wrapper'")) 2>&1 | ForEach-Object { $_.ToString() } | Out-String; $code = $LASTEXITCODE }
+        finally { $ErrorActionPreference = $previous }
+        $code | Should -Be 1 -Because $out
+        $out | Should -Match 'nds-rom'
+        $out | Should -Not -Match 'is not recognized'
+    }
+    It 'REFUSES (exit 2) instead of passing when it cannot read what it must check' {
+        $repo = New-TestRepo
+        $r = Invoke-GuardProcess @('-Mode', 'Paths', '-Path', (Join-Path $TestDrive 'does_not_exist.bin'), '-RepoRoot', $repo) $repo
+        $r.ExitCode | Should -Not -Be 0
+        $r = Invoke-GuardProcess @('-Mode', 'Range', '-RepoRoot', $repo) $repo      # missing -Base
+        $r.ExitCode | Should -Be 2
+        $r.Output | Should -Match 'fail closed'
+    }
+    It 'REFUSES when run outside a git repository' {
+        $plain = Join-Path $TestDrive ('plain_' + [guid]::NewGuid().ToString('N')); New-Item -ItemType Directory -Path $plain | Out-Null
+        (Invoke-GuardProcess @('-Mode', 'All') $plain).ExitCode | Should -Be 2
+    }
+}
+
 Describe 'Git hooks (pre-commit and pre-push)' -Skip:([Environment]::OSVersion.Platform -eq 'Win32NT') {
     BeforeAll {
         # the hooks call "pwsh" from PATH; make sure the host that runs these tests is reachable under that name

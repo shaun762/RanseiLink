@@ -27,6 +27,7 @@
     Limits: a git hook can be bypassed with --no-verify, and only sees what git sees. CI re-runs this check on every pull
     request. Neither stops you from uploading a file by other means; AGENTS.md rule 1 still applies.
 
+    Fails CLOSED: any internal error exits with code 2 and blocks the commit/push/CI job.
     Compatible with Windows PowerShell 5.1 and PowerShell 7+. Makes no network calls.
 #>
 [CmdletBinding()]
@@ -154,7 +155,18 @@ function Test-IsAllowlisted([string]$RelPath, [string[]]$Allowlist) {
     return $false
 }
 
-# Core: $Candidates are objects with Path (repo-relative, forward slashes), Size, GetPrefix (scriptblock taking a byte count).
+# Prefix reader for a candidate. Candidates are plain data (Kind = git|disk) so no closures are needed (closures break function
+# lookup when the script is launched through some wrappers, e.g. GitHub Actions' "pwsh -command"). Tests may supply a GetPrefix scriptblock.
+function Get-CandidatePrefix($Candidate, [int]$Count) {
+    if ($Candidate.PSObject.Properties['GetPrefix']) { return (, (& $Candidate.GetPrefix $Count)) }
+    switch ($Candidate.Kind) {
+        'git' { return (, (Get-GitBlobPrefix $Candidate.Repo $Candidate.Spec $Count)) }
+        'disk' { return (, (Read-DiskPrefix $Candidate.Full $Count)) }
+        default { throw "Unknown candidate kind '$($Candidate.Kind)' for $($Candidate.Path)" }
+    }
+}
+
+# Core: $Candidates are objects with Path (repo-relative, forward slashes), Size and either (Kind, Repo, Spec | Full) or GetPrefix.
 function Get-GuardFindings {
     param([object[]]$Candidates, [string[]]$Allowlist, [int]$MaxFileMB = 5)
     $findings = New-Object System.Collections.Generic.List[object]
@@ -163,7 +175,7 @@ function Get-GuardFindings {
         $add = { param($rule, $msg) $findings.Add([pscustomobject]@{ Path = $p; Rule = $rule; Message = $msg }) }
         foreach ($pat in $script:ForbiddenNamePatterns) { if ($p -match $pat) { & $add 'forbidden-name' 'ROM/save/state/dump file names may never be committed.'; break } }
         foreach ($pat in $script:ForbiddenDirPatterns) { if ($p -match $pat) { & $add 'forbidden-dir' 'Workspace, dump and diagnostics folders may never be committed.'; break } }
-        $prefix = & $c.GetPrefix 16384
+        $prefix = [byte[]](Get-CandidatePrefix $c 16384)
         if (Test-NdsRomHeader $prefix $c.Size) { & $add 'nds-rom' 'Content has the structure of a Nintendo DS ROM (commercial or not). ROMs may never be committed or uploaded.' }
         $allowed = Test-IsAllowlisted $p $Allowlist
         if (-not $allowed) {
@@ -183,7 +195,7 @@ function Get-GuardCandidates {
             $names = Invoke-GitText $Repo @('diff', '--cached', '--name-only', '--diff-filter=ACMR', '-z')
             foreach ($n in @($names -split "`0" | Where-Object { $_ })) {
                 $spec = ':' + $n
-                $list.Add([pscustomobject]@{ Path = $n; Size = (Get-GitBlobSize $Repo $spec); GetPrefix = { param($c) Get-GitBlobPrefix $Repo $spec $c }.GetNewClosure() })
+                $list.Add([pscustomobject]@{ Path = $n; Size = (Get-GitBlobSize $Repo $spec); Kind = 'git'; Repo = $Repo; Spec = $spec })
             }
         }
         'Range' {
@@ -193,7 +205,7 @@ function Get-GuardCandidates {
             $names = Invoke-GitText $Repo @('diff', '--name-only', '--diff-filter=ACMR', '-z', "$from..$Head")
             foreach ($n in @($names -split "`0" | Where-Object { $_ })) {
                 $spec = $Head + ':' + $n
-                $list.Add([pscustomobject]@{ Path = $n; Size = (Get-GitBlobSize $Repo $spec); GetPrefix = { param($c) Get-GitBlobPrefix $Repo $spec $c }.GetNewClosure() })
+                $list.Add([pscustomobject]@{ Path = $n; Size = (Get-GitBlobSize $Repo $spec); Kind = 'git'; Repo = $Repo; Spec = $spec })
             }
         }
         'All' {
@@ -201,7 +213,7 @@ function Get-GuardCandidates {
             foreach ($n in @($names -split "`0" | Where-Object { $_ })) {
                 $full = [IO.Path]::Combine($Repo, $n)
                 if (-not (Test-Path -LiteralPath $full -PathType Leaf)) { continue }
-                $list.Add([pscustomobject]@{ Path = $n; Size = (Get-Item -LiteralPath $full -Force).Length; GetPrefix = { param($c) Read-DiskPrefix $full $c }.GetNewClosure() })
+                $list.Add([pscustomobject]@{ Path = $n; Size = (Get-Item -LiteralPath $full -Force).Length; Kind = 'disk'; Full = $full })
             }
         }
         'Paths' {
@@ -209,7 +221,7 @@ function Get-GuardCandidates {
                 $full = (Resolve-Path -LiteralPath $f).Path
                 $rel = $full
                 if ($full.StartsWith($Repo, [StringComparison]::OrdinalIgnoreCase)) { $rel = $full.Substring($Repo.Length).TrimStart('\', '/') }
-                $list.Add([pscustomobject]@{ Path = $rel; Size = (Get-Item -LiteralPath $full -Force).Length; GetPrefix = { param($c) Read-DiskPrefix $full $c }.GetNewClosure() })
+                $list.Add([pscustomobject]@{ Path = $rel; Size = (Get-Item -LiteralPath $full -Force).Length; Kind = 'disk'; Full = $full })
             }
         }
     }
@@ -229,6 +241,16 @@ function Read-DiskPrefix([string]$File, [int]$Count) {
 }
 
 function Invoke-RomGuard {
+    $ErrorActionPreference = 'Stop'   # a check that errors out must never look like a check that passed
+    try { return (Invoke-RomGuardCore) }
+    catch {
+        Write-Host ''
+        Write-Host "ROM guard could not complete and therefore REFUSES (fail closed): $($_.Exception.Message)" -ForegroundColor Red
+        return 2
+    }
+}
+
+function Invoke-RomGuardCore {
     $repo = Get-GuardRepoRoot $RepoRoot
     $allowFile = $AllowlistPath
     if (-not $allowFile) { $allowFile = [IO.Path]::Combine($repo, 'tools', 'guard', 'binary-allowlist.txt') }
